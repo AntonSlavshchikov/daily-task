@@ -11,7 +11,7 @@ class LogoutController extends Controller
 {
     public function __invoke(Request $request): JsonResource
     {
-        auth()->logout();
+        auth()->user()->token()->delete();
         return JsonResource::make(['status' => 200, 'message' => 'You are successfully logged out']);
     }
 }
