@@ -18,7 +18,15 @@ class TaskResource extends Resource
         return [
             'title' => $this->resource->title,
             'category' => $this->when($this->resource->category, fn() => CategoryTaskResource::make($this->resource->category), null),
-            'isReady' => $this->resource->isReady
+            'isReady' => $this->resource->isReady,
+            'user_id' => $this->resource->user_id,
+        ];
+    }
+
+    public function toAppends(Request $request): array
+    {
+        return [
+            'created_at' => $this->resource->created_at->format('d.m.Y'),
         ];
     }
 }

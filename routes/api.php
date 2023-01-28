@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 //Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //    return $request->user();
 //});
-
 Route::post('/register', \App\Http\Controllers\Auth\RegisterController::class);
 Route::post('/login', \App\Http\Controllers\Auth\LoginController::class);
 Route::post('/logout', \App\Http\Controllers\Auth\LogoutController::class);
@@ -26,15 +25,16 @@ Route::post('/logout', \App\Http\Controllers\Auth\LogoutController::class);
  * Маршруты для работы с ЗАДАЧАМИ
  */
 Route::middleware('auth:sanctum')->group(function () {
-    // Создать задачу
-    Route::post('/task/create', \App\Http\Controllers\Task\CreateController::class);
 // Редактировать задачу (Использовать для пометки выполнения задачи)
     Route::post('/task/update', \App\Http\Controllers\Task\UpdateController::class);
 // Заменить текущую задачу на новую
     Route::post('/task/replace/{id}', \App\Http\Controllers\Task\ReplacementController::class);
 // Получить задачу по ID
     Route::get('/task/get/{id}', \App\Http\Controllers\Task\GetByIDController::class);
-// Получить задачи пользователя по ID
-    Route::get('/task/get_user_task/{user_id}', \App\Http\Controllers\Task\GetAllUserTaskController::class);
+    // Получить список задач пользователя
+    Route::get('/task/getAll', \App\Http\Controllers\Task\GetAllUserTaskController::class);
 });
+
+// Создать список задач для пользователей
+Route::post('/task/create', \App\Http\Controllers\Task\CreateController::class);
 

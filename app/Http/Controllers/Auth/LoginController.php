@@ -2,33 +2,35 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Contracts\AuthContractsService;
+use App\DataTransfer\Auth\LoginData;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
     /**
+     * Аутентификая пользователяы
+     *
      * @param Request $request
      * @return JsonResource
      */
-    public function __invoke(Request $request): JsonResource
+    public function __invoke(Request $request, AuthContractsService $authServices): JsonResource
     {
-        // Массив данныз пользователя
-        $data = [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
-        // Проверка пользователя
-        if (auth()->attempt($data)) {
-            // Если данные верны то создаем токен
-            $token = auth()->user()->createToken('auth_token');
-            // Возвращаем токен
-            return JsonResource::make(['status' => 200, 'token' => $token->plainTextToken]);
+        // Проверка даных
+        $isValid = Validator::make($request->toArray(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+        // Если проверка не пройдена, то возвращаем ошибки
+        if ($isValid->fails()){
+            return JsonResource::make(['message' => $isValid->errors()]);
         }
-        // Если данные не верны, то ошибка
-        return JsonResource::make(['status' => 401, 'error' => 'Unauthorised']);
+        // Возвращаем результат
+        return $authServices->login(LoginData::from($request));
     }
 }

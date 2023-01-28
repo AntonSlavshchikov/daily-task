@@ -10,7 +10,7 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'category_id', 'isReady'];
+    protected $fillable = ['title', 'category_id', 'isReady', 'user_id'];
 
     /**
      * Category Task
@@ -20,5 +20,15 @@ class Task extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(CategoryTask::class);
+    }
+
+    /**
+     * User
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
