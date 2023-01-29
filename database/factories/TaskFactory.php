@@ -22,7 +22,7 @@ class TaskFactory extends Factory
         $user = User::first();
 
         return [
-            'title' => $this->faker->title,
+            'title' => $this->faker->unique()->text(100),
             'category_id' => $category->id,
             'isReady' => false,
             'user_id' => $user->id

@@ -32,7 +32,7 @@ class TaskResource extends Resource
     public function toAppends(Request $request): array
     {
         return [
-            'created_at' => $this->resource->created_at->format('d.m.Y'),
+            'date' => $this->resource->created_at->format('d.m.Y'),
         ];
     }
 }
