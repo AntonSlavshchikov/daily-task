@@ -30,10 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/task/replace/{id}', \App\Http\Controllers\Task\ReplacementController::class);
     // Получить список задач пользователя
     Route::get('/task/getAll', \App\Http\Controllers\Task\GetAllUserTaskController::class);
-
+    // Выйти из системы
     Route::post('/logout', \App\Http\Controllers\Auth\LogoutController::class);
 });
 
-// Создать список задач для пользователей
-Route::post('/task/create', \App\Http\Controllers\Task\CreateController::class);
 
