@@ -19,6 +19,6 @@ class UpdateController extends Controller
      */
     public function __invoke(Request $request, TaskContractsService $taskService): TaskResource|JsonResource
     {
-       return $taskService->updateTask($request->id);
+        return $taskService->updateTask($request->id);
     }
 }

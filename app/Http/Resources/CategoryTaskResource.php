@@ -10,7 +10,7 @@ class CategoryTaskResource extends Resource
     /**
      * Оригинальные значения
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array
      */
     public function toAttributes(Request $request): array

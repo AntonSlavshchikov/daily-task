@@ -19,6 +19,6 @@ class ReplacementController extends Controller
      */
     public function __invoke(Request $request, TaskContractsService $taskService): TaskResource|JsonResource
     {
-       return $taskService->replaceTask($request->id);
+        return $taskService->replaceTask($request->id);
     }
 }

@@ -25,7 +25,7 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
         // Если проверка не пройдена, то возвращаем ошибки
-        if ($isValid->fails()){
+        if ($isValid->fails()) {
             return JsonResource::make(['message' => $isValid->errors()]);
         }
         // Возвращаем результат

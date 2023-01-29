@@ -11,6 +11,5 @@ class LoginData extends Data
      public string $email,
      public string $password
  )
- {
- }
+ {}
 }

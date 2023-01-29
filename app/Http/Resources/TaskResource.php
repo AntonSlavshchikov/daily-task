@@ -10,7 +10,7 @@ class TaskResource extends Resource
     /**
      * Оригинальные значения
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array
      */
     public function toAttributes(Request $request): array
@@ -25,7 +25,11 @@ class TaskResource extends Resource
     public function toRelationships(Request $request): array
     {
         return [
-            'category' => $this->when($this->resource->category, fn() => CategoryTaskResource::make($this->resource->category), null),
+            'category' => $this->when(
+                $this->resource->category,
+                fn() => CategoryTaskResource::make($this->resource->category),
+                null
+            ),
         ];
     }
 
