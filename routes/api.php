@@ -19,20 +19,19 @@ use Illuminate\Support\Facades\Route;
 //});
 Route::post('/register', \App\Http\Controllers\Auth\RegisterController::class);
 Route::post('/login', \App\Http\Controllers\Auth\LoginController::class);
-Route::post('/logout', \App\Http\Controllers\Auth\LogoutController::class);
 
 /**
  * Маршруты для работы с ЗАДАЧАМИ
  */
 Route::middleware('auth:sanctum')->group(function () {
-// Редактировать задачу (Использовать для пометки выполнения задачи)
-    Route::post('/task/update', \App\Http\Controllers\Task\UpdateController::class);
-// Заменить текущую задачу на новую
+    // Редактировать задачу (Использовать для пометки выполнения задачи)
+    Route::post('/task/update/{id}', \App\Http\Controllers\Task\UpdateController::class);
+    // Заменить текущую задачу на новую
     Route::post('/task/replace/{id}', \App\Http\Controllers\Task\ReplacementController::class);
-// Получить задачу по ID
-    Route::get('/task/get/{id}', \App\Http\Controllers\Task\GetByIDController::class);
     // Получить список задач пользователя
     Route::get('/task/getAll', \App\Http\Controllers\Task\GetAllUserTaskController::class);
+
+    Route::post('/logout', \App\Http\Controllers\Auth\LogoutController::class);
 });
 
 // Создать список задач для пользователей

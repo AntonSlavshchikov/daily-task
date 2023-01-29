@@ -13,5 +13,7 @@ interface AuthContractsService {
     public function registration(RegistrationData $registrationData): JsonResource;
     // Аутентификция
     public function login(LoginData $loginData): JsonResource;
+    // Выход из системы
+    public function logout(): JsonResource;
 }
 

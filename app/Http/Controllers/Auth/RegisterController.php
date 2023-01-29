@@ -3,15 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Contracts\AuthContractsService;
-use App\Contracts\UserContractService;
 use App\DataTransfer\Auth\RegistrationData;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
-use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller

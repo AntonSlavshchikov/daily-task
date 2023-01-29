@@ -4,6 +4,7 @@ namespace App\DataTransfer\Auth;
 
 use Spatie\LaravelData\Data;
 
+// Данные аутентификации пользователя
 class LoginData extends Data
 {
  public function __construct(

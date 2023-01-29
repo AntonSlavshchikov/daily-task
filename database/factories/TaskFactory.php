@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\CategoryTask;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,11 +19,13 @@ class TaskFactory extends Factory
     public function definition()
     {
         $category = collect(CategoryTask::get())->random();
+        $user = User::first()->get();
 
         return [
             'title' => $this->faker->title,
             'category_id' => $category->id,
-            'isReady' => false
+            'isReady' => false,
+            'user_id' => $user->id
         ];
     }
 }

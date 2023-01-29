@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Log;
 
 class AuthService implements AuthContractsService
 {
+    /**
+     * Инициализация сервиса пользователей
+     *
+     * @param UserContractService $userContractService
+     */
     public function __construct(protected UserContractService $userContractService)
     {
         //
@@ -68,6 +73,19 @@ class AuthService implements AuthContractsService
         return JsonResource::make([
             'error' => 'Unautorize'
         ], 401);
+    }
+
+    /**
+     * Выход из системы
+     *
+     * @return JsonResource
+     */
+    public function logout(): JsonResource
+    {
+        // Удаляем токен
+        auth()->user()->tokens()->delete();
+        // Возвращаем сообщение
+        return JsonResource::make(['message' => 'You are successfully logged out'], 200);
     }
 }
 

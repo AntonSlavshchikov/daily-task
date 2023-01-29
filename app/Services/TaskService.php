@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Log;
 
 class TaskService implements TaskContractsService
 {
-    public function create()
+    /**
+     * Создание задач для каждого из пользователей
+     *
+     * @return void
+     */
+    public function create(): void
     {
         // Получаем всех пользователей
         $users = User::all();
@@ -52,7 +57,12 @@ class TaskService implements TaskContractsService
         }
     }
 
-    public function getAllTaskUser(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection|JsonResource
+    /**
+     * Получение задач для определенного пользователя
+     *
+     * @return TaskResource|JsonResource
+     */
+    public function getAllTaskUser(): TaskResource|JsonResource
     {
         try {
             $nowDate = date('Y-m-d');
@@ -67,6 +77,87 @@ class TaskService implements TaskContractsService
             return JsonResource::make([
                 'error' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Обновить задачу пользователя по ID (Отметить выполненной)
+     *
+     * @param int $id
+     * @return TaskResource|JsonResource
+     */
+    public function updateTask(int $id): TaskResource|JsonResource
+    {
+        // Обновление записи
+        try {
+            // Начало транзакции
+            DB::beginTransaction();
+            // Поиск по ID и обновление записи
+            $task = Task::find($id);
+            // Если задачи нет, то вовзращаем сообщение
+            if (!$task) {
+                DB::commit();
+                // Возвращаем null если пусто
+                return JsonResource::make(['message' => 'Task not'], 400);
+            }
+            // Помечаем как выполненную
+            $task->update([
+                'isReady' => true
+            ]);
+            // Коммит транзакции
+            DB::commit();
+            // Возвращаем обновленную задачу
+            return TaskResource::make($task);
+        } catch (\Exception $e) {
+            // Откатываем транзакцию
+            DB::rollBack();
+            // Пишем логи
+            Log::error($e->getMessage());
+            // Возвращаем ошибку
+            return JsonResource::make(['status' => 500, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Замена задачи
+     *
+     * @param int $id
+     * @return TaskResource|JsonResource
+     */
+    public function replaceTask(int $id): TaskResource|JsonResource
+    {
+        // Обновление записи
+        try {
+            // Начало транзакции
+            DB::beginTransaction();
+            // Поиск по ID и обновление записи
+            $task = Task::find($id);
+            // Проверка есть ли ЗАДАЧА
+            if (!$task) {
+                // Коммит транзакции
+                DB::commit();
+                // Возвращаем null если пусто
+                return JsonResource::make(['message' => 'Task not']);
+            }
+            // Получаем рандомую категорию задачи
+            $category_task = collect(CategoryTask::get())->random();
+            // Заменяем задачу
+            $task->update([
+                'title' => \Illuminate\Support\Str::random(100),
+                'category_id' => $category_task->id,
+                'isReady' => false
+            ]);
+            // Коммит транзакции
+            DB::commit();
+            // Возвращаем обновленную задачу
+            return TaskResource::make($task);
+        } catch (\Exception $e) {
+            // Откатываем транзакцию
+            DB::rollBack();
+            // Пишем логи
+            Log::error($e->getMessage());
+            // Возвращаем ошибку
+            return JsonResource::make(['status' => 500, 'error' => $e->getMessage()]);
         }
     }
 }

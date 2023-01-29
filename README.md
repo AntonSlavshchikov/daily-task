@@ -1,66 +1,216 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Dayli-task
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Приложение предназначено для формирования списка задач каждому пользователю на каждый день. 
 
-## About Laravel
+**Основные функции приложения:**
+- Регистрация пользователя
+- Авторизация пользователя
+- Получение списка задач авторизированного пользователя
+- Отметка определенной задачи о ее выполнении
+- Замена задачи
+- Ежедневное формирование нового уникального списка задач
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Начало работы
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Чтобы начать использовать данной приложение, нужно клонировать репозиторий, установить все зависимости прописав команду: <br/>
+`composer install` <br/>
+После нужно сформировать `.env` файл с параметрами, а также параметрами подключения к базе данных.<br/>
+В данном приложении присутствуют ФАБРИКИ, которые генерируют фейковые данные для начала работы и проверки функционала приложения. Чтобы их сгенерировать, нужно запустить команду:<br/>
+`php artisan db:seed`<br/>
+После ее выполнения сгенерируется тестовый пользователь 'test@test.com', а так же категории задач и 10 задач для тестового пользователя.
+## Примечание
+Все ответы по задачам возвращаются в json формате, который имеет структуру:
+```json
+{
+    "data": {
+        "id": "ID ЗАДАЧИ",
+        "type": "ТАБЛИЦА В БД",
+        "attributes": { 
+            "title": "НАИМЕНОВАНИЕ ЗАДАЧИ",
+            "isReady": "СТАТУС ЗАДАЧИ",
+            "user_id": "КАКОМУ ПОЛЬЗОВАТЕЛЮ ПРИНАДЛЕЖИТ ЗАДАЧА"
+        },
+        "relationships": {
+            "category": {
+                "id": "ID КАТЕГОРИИ",
+                "type": "ТАБЛИЦА БД",
+                "attributes": {
+                    "title": "НАИМЕНОВАНИЕ КАТЕГОРИИ"
+                },
+                "relationships": ["СВЯЗИ С ДРУГИМИ РЕСУРСАЛИ"],
+                "appends": ["ДОПОЛНИТЕЛЬНЫЕ ДАННЫЕ"]
+            }
+        },
+        "appends": {
+            "created_at": "29.01.2023"
+        }
+    }
+}
+```
+## Функционал
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**API роуты для выполнения задач:**
+- /api/register
+- /api/login
+- /api/logout
+- /api/task/task/create
+- /api/task/getAll
+- /api/task/update/{id}
+- /api/task/replace/{id}
 
-## Learning Laravel
+Теперь о каждом по подробнее:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### /api/register
+Функция для регистрации пользователя. Принимает в тело запроса такие параметры как: `name, password, email`
+После того, как пользователь ввел свои данные и отправил запрос, функция вернет ответ в виде токена доступа
+```json
+{
+  "data": {
+    "token": "your_auth_token"
+  }
+}
+```
+Который в дальнейшем будет использоваться для проверки авторизации пользователя, если токена не будет, то и запросы будут возвращать соответствующую ошибку
+```json
+{
+  "message": "Unauthenticated."
+}
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### /api/login
+Функция для аутентификации пользователя. Принимает в тело запроса такие параметры как: `email, password`
+После того, как пользователь ввел свои данные и отправил запрос, функция вернет токен доступа
+```json
+{
+  "data": {
+    "token": "your_auth_token"
+  }
+}
+```
+Который в дальнейшем будет использоваться для проверки авторизации пользователя, если токена не будет, то и запросы будут возвращать соответствующую ошибку
+```json
+{
+  "message": "Unauthenticated."
+}
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### /api/logout
+Функция для выхода из системы. При ее выполненни программа отзывает токены авторизации пользователя.
+Результат выполнения функции - это json сообщение о том, что пользователь покинул систему.
+```json
+{
+    "data": {
+        "message": "You are successfully logged out"
+    }
+}
+```
 
-## Laravel Sponsors
+### /api/task/create
+Функция предназначена для формирования уникального списка задач для определенного пользователя.
+Запускается она в планировщике задач, что бы запустить планировщик локально, нужно выполнить команду:<br/>
+`php artisan schedule:run` - выполнить команду мгновенно <br/>
+`php artisan schedule:work` - запустит локально планировщик задач, который будет выполнять функцию каждый день
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### <span style="color:red">!ВАЖНО!</span>
+Дальнейшии функции выполняются будучи авторизированным, чтобы небыло ошибок и иметь доступ к функциям нужно 
+добавить 2 заголовка:<br/>
+`Accept: application/json`<br/>
+`Authorization: Bearer your_token`
 
-### Premium Partners
+### /api/task/getAll
+<span style="color:orange">**Данная функция выполняется будучи авторизированным**</span><br/>
+Функция которая возвращает список задач для текущего пользователя. При ее выполнении возвращается результат в виде json:
+```json
+{
+  "data": [
+      {
+          "id": 1,
+          "type": "tasks",
+          "attributes": {
+              "title": "Nihil quia qui sit reiciendis sit. Aut ex laboriosam est nulla sit.",
+              "isReady": 0,
+              "user_id": 1
+          },
+          "relationships": {
+              "category": {
+                  "id": 5,
+                  "type": "category_tasks",
+                  "attributes": {
+                      "title": "Performance"
+                  },
+                  "relationships": [],
+                  "appends": []
+              }
+          },
+          "appends": {
+              "created_at": "29.01.2023"
+          }
+      }
+  ]
+}
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### /api/task/update/{id}
+<span style="color:orange">**Данная функция выполняется будучи авторизированным**</span><br/>
+Функция которая отмечает задачу как выполненную по id  и возвращает ее в json формате
+```json
+{
+  "data": [
+      {
+          "id": 1,
+          "type": "tasks",
+          "attributes": {
+              "title": "Nihil quia qui sit reiciendis sit. Aut ex laboriosam est nulla sit.",
+              "isReady": 1,
+              "user_id": 1
+          },
+          "relationships": {
+              "category": {
+                  "id": 5,
+                  "type": "category_tasks",
+                  "attributes": {
+                      "title": "Performance"
+                  },
+                  "relationships": [],
+                  "appends": []
+              }
+          },
+          "appends": {
+              "created_at": "29.01.2023"
+          }
+      }
+  ]
+}
+```
 
-## Contributing
+### /api/task/replace/{id}
+<span style="color:orange">**Данная функция выполняется будучи авторизированным**</span><br/>
+Функция которая заменяет задачу по id и возвращает замененную задачу в json формате.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```json
+{
+    "data": {
+        "id": 2906,
+        "type": "tasks",
+        "attributes": {
+            "title": "654Xf36tRJwDo3RvKiEhOwn93YBowPnYoPCxAzQilDwdETmFUuwz6aJ7ycZQuMG0sGRGBjgorLJ0pVfuoH3hRPOLWF4rluefcrIE",
+            "isReady": false,
+            "user_id": 1
+        },
+        "relationships": {
+            "category": {
+                "id": 6,
+                "type": "category_tasks",
+                "attributes": {
+                    "title": "Booleans"
+                },
+                "relationships": [],
+                "appends": []
+            }
+        },
+        "appends": {
+            "created_at": "29.01.2023"
+        }
+    }
+}
+```
