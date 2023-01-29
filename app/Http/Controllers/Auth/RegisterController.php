@@ -18,7 +18,7 @@ class RegisterController extends Controller
      * @param AuthContractsService $authService
      * @return JsonResource
      */
-    public function __invoke(Request $request, AuthContractsService $authService)
+    public function __invoke(Request $request, AuthContractsService $authService): JsonResource
     {
         // Проверка данных
         $isValid = Validator::make($request->toArray(), [
@@ -27,12 +27,13 @@ class RegisterController extends Controller
             'password' => 'required|min:8',
         ]);
         // Если проверка не пройдена
-        if (!$isValid) {
+        if ($isValid->fails()) {
             return JsonResource::make([
                 'message' => $isValid->errors()
             ]);
         }
-        // Авторизация
+
+        // Регистрация
         return $authService->registration(
             RegistrationData::from($request)
         );

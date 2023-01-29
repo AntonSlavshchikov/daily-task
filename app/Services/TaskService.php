@@ -22,11 +22,11 @@ class TaskService implements TaskContractsService
     {
         // Получаем всех пользователей
         $users = User::all();
-        // Инициализация коллекции задач
-        $collectionTask = collect();
         try {
             // Проходим по каждому из пользователей
             foreach ($users as $user) {
+                // Инициализация коллекции задач
+                $collectionTask = collect();
                 // Опряделяем количество задач для пользователя
                 $col_task = rand(1, 100);
                 // Цикл для формирования задач заданного количества
@@ -114,7 +114,9 @@ class TaskService implements TaskContractsService
             // Пишем логи
             Log::error($e->getMessage());
             // Возвращаем ошибку
-            return JsonResource::make(['status' => 500, 'error' => $e->getMessage()]);
+            return JsonResource::make([
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -137,7 +139,9 @@ class TaskService implements TaskContractsService
                 // Коммит транзакции
                 DB::commit();
                 // Возвращаем null если пусто
-                return JsonResource::make(['message' => 'Task not']);
+                return JsonResource::make([
+                    'message' => 'Task not'
+                ]);
             }
             // Получаем рандомую категорию задачи
             $category_task = collect(CategoryTask::get())->random();
@@ -157,7 +161,9 @@ class TaskService implements TaskContractsService
             // Пишем логи
             Log::error($e->getMessage());
             // Возвращаем ошибку
-            return JsonResource::make(['status' => 500, 'error' => $e->getMessage()]);
+            return JsonResource::make([
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }

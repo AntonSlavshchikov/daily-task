@@ -44,14 +44,18 @@ class AuthService implements AuthContractsService
             $token = $user->createToken('auth_token');
             DB::commit();
             // Возвращаем результат
-            return JsonResource::make(['token' => $token->plainTextToken], 200);
+            return JsonResource::make([
+                'token' => $token->plainTextToken
+            ], 200);
         } catch (\Exception $e) {
             // Откат транзакции
             DB::rollBack();
             // Пишем логи
             Log::error($e->getMessage());
             // Отправляем ошибкуы
-            return JsonResource::make(['error' => $e->getMessage()]);
+            return JsonResource::make([
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -64,14 +68,16 @@ class AuthService implements AuthContractsService
     public function login(LoginData $loginData): JsonResource
     {
         // Если пользователь авторизирован то генерируем токен и возвращаем его
-        if (auth()->attempt($loginData->toArray())){
+        if (auth()->attempt($loginData->toArray())) {
             $token = auth()->user()->createToken('auth_token');
 
-            return JsonResource::make(['token' => $token->plainTextToken]);
+            return JsonResource::make([
+                'token' => $token->plainTextToken
+            ]);
         }
         // Ошибка в случае неудачи
         return JsonResource::make([
-            'error' => 'Unautorize'
+            'error' => 'Unauthorized'
         ], 401);
     }
 
@@ -85,7 +91,9 @@ class AuthService implements AuthContractsService
         // Удаляем токен
         auth()->user()->tokens()->delete();
         // Возвращаем сообщение
-        return JsonResource::make(['message' => 'You are successfully logged out'], 200);
+        return JsonResource::make([
+            'message' => 'You are successfully logged out'
+        ], 200);
     }
 }
 

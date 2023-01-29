@@ -19,7 +19,7 @@ class TaskFactory extends Factory
     public function definition()
     {
         $category = collect(CategoryTask::get())->random();
-        $user = User::first()->get();
+        $user = User::first();
 
         return [
             'title' => $this->faker->title,
