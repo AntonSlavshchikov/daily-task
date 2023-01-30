@@ -90,16 +90,15 @@ class TaskService implements TaskContractsService
     {
         // Обновление записи
         try {
-            // Начало транзакции
-            DB::beginTransaction();
             // Поиск по ID и обновление записи
             $task = Task::find($id);
             // Если задачи нет, то вовзращаем сообщение
             if (!$task) {
-                DB::commit();
                 // Возвращаем null если пусто
                 return JsonResource::make(['message' => 'Task not'], 400);
             }
+            // Начало транзакции
+            DB::beginTransaction();
             // Помечаем как выполненную
             $task->update([
                 'isReady' => true
@@ -130,14 +129,10 @@ class TaskService implements TaskContractsService
     {
         // Обновление записи
         try {
-            // Начало транзакции
-            DB::beginTransaction();
             // Поиск по ID и обновление записи
             $task = Task::find($id);
             // Проверка есть ли ЗАДАЧА
             if (!$task) {
-                // Коммит транзакции
-                DB::commit();
                 // Возвращаем null если пусто
                 return JsonResource::make([
                     'message' => 'Task not'
@@ -145,6 +140,8 @@ class TaskService implements TaskContractsService
             }
             // Получаем рандомую категорию задачи
             $category_task = collect(CategoryTask::get())->random();
+            // Начало транзакции
+            DB::beginTransaction();
             // Заменяем задачу
             $task->update([
                 'title' => \Illuminate\Support\Str::random(100),
